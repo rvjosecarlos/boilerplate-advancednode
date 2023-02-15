@@ -11,8 +11,14 @@ app.use('/public', express.static(process.cwd() + '/public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.route('/').get((req, res) => {
+// Usa el motor de plantilla pug
+app.set( 'view engine', 'pug' );
 
+// Define las vistas que seran compiladas de pug
+app.set( 'views', `${process.cwd()}/views/pug` );
+
+app.route('/').get((req, res) => {
+  res.render( 'index' );
 });
 
 const PORT = process.env.PORT || 3000;
