@@ -45,8 +45,8 @@ app.use( passport.initialize() );
 
 // Habilitar la serializacion
 passport.serializeUser( (user, done)=>{
-    done(null, user.id);
-  });
+    done(null, user._id);
+});
 
 // Habilitar la deserializacion del usuario
 passport.deserializeUser( (id, done)=>{
