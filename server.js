@@ -25,28 +25,26 @@ app.set( 'view engine', 'pug' );
 app.set( 'views', `./views/pug` );
 
 // Conectar la BD antes de cualquier solicitud get
-async function conectarBD( cliente ){
-  
-  try{
-    const miBaseDeDatos = await cliente.db('controlcalidad').collections('usuarios');
-    console.log('log:', miBaseDeDatos);
-    app.get('/', (req, res)=>{
-      res.render( 'index', {
-        title: 'Connected to Database',
-        message: 'Please Login'
-      })
+myDB(async client => {
+  const myDataBase = await client.db('database').collection('users');
+
+  // Be sure to change the title
+  app.route('/').get((req, res) => {
+    // Change the response to render the Pug template
+    res.render('index', {
+      title: 'Connected to Database',
+      message: 'Please login'
     });
-  }
-  catch( error ){
-    app.get( '/', (req, res)=>{
-      res.render( 'index', {
-        title: error,
-        message: 'Unable to connect to database'
-      });
-    });
-  };
-};
-myDB( conectarBD );
+  });
+
+  // Serialization and deserialization here...
+
+  // Be sure to add this...
+}).catch(e => {
+  app.route('/').get((req, res) => {
+    res.render('index', { title: e, message: 'Unable to connect to database' });
+  });
+});
 
 app.route('/').get((req, res) => {
   res.render( 'index', {
