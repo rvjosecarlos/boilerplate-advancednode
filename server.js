@@ -4,6 +4,10 @@ const express = require('express');
 const myDB = require('./connection');
 const fccTesting = require('./freeCodeCamp/fcctesting.js');
 
+// Importar express-session y passport
+const session = require('express-session');
+const passport = require('passport');
+
 const app = express();
 
 fccTesting(app); //For FCC testing purposes
@@ -23,6 +27,18 @@ app.route('/').get((req, res) => {
     message: 'Please log in'
   });
 });
+
+// Configurando session-express
+app.use( session({
+  secret: process.env.SESSION_SECRET,
+  resave: true,
+  saveUninitialized: true,
+  cookie: { secure: false }
+}));
+
+// Configurar el servidor con passport
+app.use( passport.session() );
+app.use( passport.initialize() );
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
