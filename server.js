@@ -9,7 +9,7 @@ const session = require('express-session');
 const passport = require('passport');
 
 // Importar mongoDB
-const mongoDB = require('mongodb');
+const { ObjectID } = require('mongodb');
 
 const app = express();
 
@@ -45,7 +45,7 @@ app.use( passport.initialize() );
 
 // Habilitar la serializacion
 passport.serializeUser( (usuario, done)=>{
-    done(null, usuario);
+    done(null, usuario.id);
   });
 
 // Habilitar la deserializacion del usuario
