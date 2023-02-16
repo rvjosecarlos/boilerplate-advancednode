@@ -24,6 +24,10 @@ app.set( 'view engine', 'pug' );
 // Define las vistas que seran compiladas de pug
 app.set( 'views', `./views/pug` );
 
+// Configurar el servidor con passport
+app.use( passport.session() );
+app.use( passport.initialize() );
+
 // Configurando session-express
 app.use( session({
   secret: process.env.SESSION_SECRET,
@@ -31,10 +35,6 @@ app.use( session({
   saveUninitialized: true,
   cookie: { secure: false }
 }));
-
-// Configurar el servidor con passport
-app.use( passport.session() );
-app.use( passport.initialize() );
 
 
 // Conectar la BD antes de cualquier solicitud get
