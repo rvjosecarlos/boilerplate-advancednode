@@ -24,6 +24,29 @@ app.set( 'view engine', 'pug' );
 // Define las vistas que seran compiladas de pug
 app.set( 'views', `./views/pug` );
 
+// Conectar la BD antes de cualquier solicitud get
+async function conectarBD( cliente ){
+  
+  try{
+    const miBaseDeDatos = await cliente.db('controlcalidad').collections('usuarios');
+    app.get('/', (req, res)=>{
+      res.render( 'index', {
+        title: 'Connected to Database',
+        message: 'Please Login'
+      })
+    });
+  }
+  catch( error ){
+    app.get( '/', (req, res)=>{
+      res.render( 'index', {
+        title: error,
+        message: 'Unable to connect to database'
+      });
+    });
+  };
+};
+myDB( conectarBD );
+
 app.route('/').get((req, res) => {
   res.render( 'index', {
     title: 'Hello',
