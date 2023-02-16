@@ -9,9 +9,8 @@ const session = require('express-session');
 const passport = require('passport');
 
 // Importar mongoDB
-const connect = require('mongodb');
-const ObjectID = connect.ObjectID;
-console.log(ObjectID);
+const { ObjectId } = require('mongodb');
+console.log( ObjectId );
 
 const app = express();
 
