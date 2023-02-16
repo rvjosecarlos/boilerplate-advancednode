@@ -29,6 +29,7 @@ async function conectarBD( cliente ){
   
   try{
     const miBaseDeDatos = await cliente.db('controlcalidad').collections('usuarios');
+    console.log('log:', miBaseDeDatos);
     app.get('/', (req, res)=>{
       res.render( 'index', {
         title: 'Connected to Database',
@@ -71,9 +72,10 @@ passport.serializeUser((user, done) => {
 });
 
 passport.deserializeUser((id, done) => {
-  //myDataBase.findOne({ _id: new ObjectID(id) }, (err, doc) => {
-  //  done(null, null);
-  //});
+  console.log('ID:',id);
+  myDataBase.findOne({ _id: new ObjectID(id) }, (err, doc) => {
+    done(null, null);
+  });
   done( null, null );
 });
 
