@@ -8,6 +8,9 @@ const fccTesting = require('./freeCodeCamp/fcctesting.js');
 const session = require('express-session');
 const passport = require('passport');
 
+// Importar mongoDB
+const mongoDB = require('mongodb');
+
 const app = express();
 
 fccTesting(app); //For FCC testing purposes
@@ -39,6 +42,17 @@ app.use( session({
 // Configurar el servidor con passport
 app.use( passport.session() );
 app.use( passport.initialize() );
+
+// Habilitar la serializacion
+passport.serializeUser( (usuario, done)=>{
+    done(null, usuario);
+  });
+
+// Habilitar la deserializacion del usuario
+passport.deserializeUser( (id, done)=>{
+  done(null, null);
+});
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
