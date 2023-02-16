@@ -24,7 +24,6 @@ app.set( 'view engine', 'pug' );
 // Define las vistas que seran compiladas de pug
 app.set( 'views', `./views/pug` );
 
-
 app.route('/').get((req, res) => {
   res.render( 'index', {
     title: 'Hello',
@@ -44,17 +43,41 @@ app.use( session({
 app.use( passport.session() );
 app.use( passport.initialize() );
 
-passport.serializeUser((user, done) => {
-  done(null, user._id);
-});
+async function conectarBD( cliente ){
 
-passport.deserializeUser((id, done) => {
-  //myDataBase.findOne({ _id: new ObjectID(id) }, (err, doc) => {
-  //  done(null, null);
-  //});
-  done( null, null );
-});
+  try{
+    const myDataBase = await cliente.db('fccNodeExpress').collections('usuarios');
 
+    app.get( '/', (req, res)=>{
+      res.render( 'index', {
+        title: 'Connected to Database',
+        message: 'Please login'
+      });
+    });
+
+    passport.serializeUser((user, done) => {
+      done(null, user._id);
+    });
+    
+    passport.deserializeUser((id, done) => {
+      myDataBase.findOne({ _id: new ObjectID(id) }, (err, doc) => {
+        done(null, null);
+      });
+      done( null, null );
+    });
+
+  }
+  catch( error ){
+
+    app.get( '/', (req, res)=>{
+      res.render( 'index', {
+        title: error,
+        message: 'Unable to connect to database'
+      });
+    });
+  };
+};
+myDB( conectarBD );
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
