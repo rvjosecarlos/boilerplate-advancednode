@@ -10,7 +10,6 @@ const passport = require('passport');
 
 // Importar mongoDB
 const ObjectID = require('mongodb').ObjectId;
-console.log( ObjectID );
 
 const app = express();
 
@@ -44,14 +43,15 @@ app.use( session({
 app.use( passport.session() );
 app.use( passport.initialize() );
 
-// Habilitar la serializacion
-passport.serializeUser( (user, done)=>{
-    done(null, user._id);
+passport.serializeUser((user, done) => {
+  done(null, user._id);
 });
 
-// Habilitar la deserializacion del usuario
-passport.deserializeUser( (id, done)=>{
-  done(null, null);
+passport.deserializeUser((id, done) => {
+  //myDataBase.findOne({ _id: new ObjectID(id) }, (err, doc) => {
+  //  done(null, null);
+  //});
+  done( null, null );
 });
 
 
