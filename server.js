@@ -24,35 +24,6 @@ app.set( 'view engine', 'pug' );
 // Define las vistas que seran compiladas de pug
 app.set( 'views', `./views/pug` );
 
-// Conectar la BD antes de cualquier solicitud get
-myDB(async client => {
-  const myDataBase = await client.db('database').collection('users');
-
-  // Be sure to change the title
-  app.route('/').get((req, res) => {
-    // Change the response to render the Pug template
-    res.render('index', {
-      title: 'Connected to Database',
-      message: 'Please login'
-    });
-  });
-
-  // Serialization and deserialization here...
-
-  // Be sure to add this...
-}).catch(e => {
-  app.route('/').get((req, res) => {
-    res.render('index', { title: e, message: 'Unable to connect to database' });
-  });
-});
-
-app.route('/').get((req, res) => {
-  res.render( 'index', {
-    title: 'Hello',
-    message: 'Please log in'
-  });
-});
-
 // Configurando session-express
 app.use( session({
   secret: process.env.SESSION_SECRET,
@@ -65,17 +36,43 @@ app.use( session({
 app.use( passport.session() );
 app.use( passport.initialize() );
 
-passport.serializeUser((user, done) => {
-  done(null, user._id);
-});
 
-passport.deserializeUser((id, done) => {
-  console.log('ID:',id);
-  myDataBase.findOne({ _id: new ObjectID(id) }, (err, doc) => {
-    done(null, doc);
-  });
-  done( null, null );
-});
+// Conectar la BD antes de cualquier solicitud get
+async function conectarBD( cliente ){
+  
+  try{
+    const miBaseDeDatos = await cliente.db('controlcalidad').collections('usuarios');
+    app.get('/', (req, res)=>{
+      
+      res.render( 'index', {
+        title: 'Connected to Database',
+        message: 'Please Login'
+      })
+
+      passport.serializeUser((user, done) => {
+        done(null, user._id);
+      });
+      
+      passport.deserializeUser((id, done) => {
+        console.log('ID:',id);
+        myDataBase.findOne({ _id: new ObjectID(id) }, (err, doc) => {
+          done(null, doc);
+        });
+        done( null, null );
+      });
+
+    });
+  }
+  catch( error ){
+    app.get( '/', (req, res)=>{
+      res.render( 'index', {
+        title: error,
+        message: 'Unable to connect to database'
+      });
+    });
+  };
+};
+myDB( conectarBD );
 
 
 const PORT = process.env.PORT || 3000;
