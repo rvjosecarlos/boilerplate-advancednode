@@ -56,12 +56,13 @@ async function conectarBD( cliente ){
     });
 
     passport.serializeUser((user, done) => {
+      console.log(user._id);
       done(null, user._id);
     });
     
     passport.deserializeUser((id, done) => {
       myDataBase.findOne({ _id: new ObjectID(id) }, (err, doc) => {
-        done(null, null);
+        done(null, doc);
       });
       done( null, null );
     });
