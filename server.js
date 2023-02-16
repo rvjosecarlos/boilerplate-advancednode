@@ -24,9 +24,13 @@ app.set( 'view engine', 'pug' );
 // Define las vistas que seran compiladas de pug
 app.set( 'views', `./views/pug` );
 
-// Configurar el servidor con passport
-app.use( passport.session() );
-app.use( passport.initialize() );
+
+app.route('/').get((req, res) => {
+  res.render( 'index', {
+    title: 'Hello',
+    message: 'Please log in'
+  });
+});
 
 // Configurando session-express
 app.use( session({
@@ -36,43 +40,20 @@ app.use( session({
   cookie: { secure: false }
 }));
 
+// Configurar el servidor con passport
+app.use( passport.session() );
+app.use( passport.initialize() );
 
-// Conectar la BD antes de cualquier solicitud get
-async function conectarBD( cliente ){
-  
-  try{
-    const miBaseDeDatos = await cliente.db('controlcalidad').collections('usuarios');
-    app.get('/', (req, res)=>{
-      
-      res.render( 'index', {
-        title: 'Connected to Database',
-        message: 'Please Login'
-      })
+passport.serializeUser((user, done) => {
+  done(null, user._id);
+});
 
-      passport.serializeUser((user, done) => {
-        done(null, user._id);
-      });
-      
-      passport.deserializeUser((id, done) => {
-        console.log('ID:',id);
-        myDataBase.findOne({ _id: new ObjectID(id) }, (err, doc) => {
-          done(null, doc);
-        });
-        done( null, null );
-      });
-
-    });
-  }
-  catch( error ){
-    app.get( '/', (req, res)=>{
-      res.render( 'index', {
-        title: error,
-        message: 'Unable to connect to database'
-      });
-    });
-  };
-};
-myDB( conectarBD );
+passport.deserializeUser((id, done) => {
+  //myDataBase.findOne({ _id: new ObjectID(id) }, (err, doc) => {
+  //  done(null, null);
+  //});
+  done( null, null );
+});
 
 
 const PORT = process.env.PORT || 3000;
